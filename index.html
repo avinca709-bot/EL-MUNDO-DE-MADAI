@@ -51,12 +51,22 @@ function showError(msg){ err.textContent = msg; err.style.display='block'; }
 
 // ====== AUDIO ======
 const audio = document.getElementById('audio');
-// Al primer clic o toque en cualquier parte de la galaxia, empieza Axel
-document.addEventListener('click', () => {
-  if (audio.paused) {
-    audio.play().catch(e => console.log("La música comenzará al interactuar"));
+const playBtn = document.getElementById('playBtn');
+const pickBtn = document.getElementById('pickBtn');
+const pickFile = document.getElementById('pickFile');
+playBtn.onclick = async () => {
+  try { if (audio.paused) { await audio.play(); playBtn.textContent='⏸︎'; } else { audio.pause(); playBtn.textContent='▶︎'; } }
+  catch(e){ showError('Si no suena, toca “Elegir canción” y selecciona tu MP3.'); }
+};
+
+pickBtn.onclick = () => pickFile.click();
+pickFile.onchange = () => {
+  if (pickFile.files && pickFile.files[0]) {
+    const url = URL.createObjectURL(pickFile.files[0]);
+    audio.src = url; audio.play().then(()=> playBtn.textContent='⏸︎').catch(()=>{});
   }
-}, { once: true });
+};
+
 // ====== WEBGL CHECK ======
 try { 
   const test = document.createElement('canvas').getContext('webgl') || document.createElement('canvas').getContext('experimental-webgl');
@@ -240,5 +250,6 @@ function loopFx(){
 </script>
 </body>
 </html>
+
 
 
